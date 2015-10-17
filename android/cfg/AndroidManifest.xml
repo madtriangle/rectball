@@ -6,6 +6,7 @@
     android:versionCode="ANDROID_VERSION_CODE"
     android:versionName="ANDROID_VERSION_NAME">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="ANDROID_SDK_VERSION"/>
@@ -29,5 +30,6 @@
                     android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
     </application>
 </manifest>

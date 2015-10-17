@@ -17,6 +17,8 @@
  */
 package es.danirod.rectball.screens;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -24,9 +26,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+
 import es.danirod.rectball.Constants;
 import es.danirod.rectball.RectballGame;
-import es.danirod.rectball.listeners.ScreenJumper;
 import es.danirod.rectball.listeners.ScreenPopper;
 
 public class GameOverScreen extends AbstractScreen {
@@ -39,36 +41,58 @@ public class GameOverScreen extends AbstractScreen {
     public void setUpInterface(Table table) {
         // Set up the label data.
         String lastScore = Integer.toString(game.getState().getScore());
-        while (lastScore.length() < 4)
-            lastScore = "0" + lastScore;
+        while (lastScore.length() < 4) { lastScore = "0" + lastScore; }
         String aliveTime = Integer.toString(Math.round(game.getState().getTime()));
         String highScore = Long.toString(game.scores.getHighestScore());
 
         // Last score.
         Label highScoreLabel = new Label(lastScore, game.getSkin(), "monospace");
         highScoreLabel.setFontScale(10f);
-        table.add(new Label(game.getLocale().get("game.gameover"), game.getSkin())).colspan(2).expandX().row();
+        table.add(new Label(game.getLocale().get("game.gameover"), game.getSkin())).colspan(2)
+             .expandX().row();
         table.add(highScoreLabel).expand().colspan(2).align(Align.center).row();
 
         // Alive time.
         Drawable clock = game.getSkin().newDrawable("iconClock");
         table.add(new Image(clock)).size(80).expandX().align(Align.right).padRight(20);
-        table.add(new Label(aliveTime, game.getSkin())).expandX().align(Align.left).padLeft(20).row();
+        table.add(new Label(aliveTime, game.getSkin())).expandX().align(Align.left).padLeft(20)
+             .row();
 
         // High score.
         Drawable crown = game.getSkin().newDrawable("iconCrown");
         table.add(new Image(crown)).size(80).expandX().align(Align.right).padRight(20);
-        table.add(new Label(highScore, game.getSkin())).expandX().align(Align.left).padLeft(20).row();
+        table.add(new Label(highScore, game.getSkin())).expandX().align(Align.left).padLeft(20)
+             .row();
 
         // Add replay button.
         TextButton replay = new TextButton(game.getLocale().get("game.replay"), game.getSkin());
         replay.addListener(new ScreenPopper(game));
-        table.add(replay).colspan(2).fillX().height(100).padTop(30).row();
+        table.add(replay).colspan(2).fillX().height(80).padTop(20).row();
 
         // Add menu button.
         TextButton menu = new TextButton(game.getLocale().get("game.menu"), game.getSkin());
         menu.addListener(new ScreenPopper(game, true));
-        table.add(menu).colspan(2).fillX().height(100).padTop(30).row();
+        table.add(menu).colspan(2).fillX().height(80).padTop(20).row();
+
+        // Add menu button.
+        final TextButton share = new TextButton(game.getLocale().get("game.share"), game.getSkin());
+        table.add(share).colspan(2).fillX().height(80).padTop(20).row();
+
+        share.addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                game.actionResolver
+                        .shareGameWithScreenshot(game.getLocale().get("main.shareMessage") + " " +
+                                                         game.getState().getScore());
+                share.setChecked(true);
+
+                return false;
+            }
+
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                share.setChecked(false);
+
+            }
+        });
 
         // Now animate the stage to make it fall.
         getStage().addAction(Actions.sequence(
@@ -81,7 +105,6 @@ public class GameOverScreen extends AbstractScreen {
     public int getID() {
         return Screens.GAME_OVER;
     }
-
 
 
 }

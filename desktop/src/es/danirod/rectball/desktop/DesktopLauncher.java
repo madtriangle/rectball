@@ -20,6 +20,7 @@ package es.danirod.rectball.desktop;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
 import es.danirod.rectball.RectballGame;
 
 public class DesktopLauncher {
@@ -30,6 +31,6 @@ public class DesktopLauncher {
 		config.title = RectballGame.VERSION;
 		config.useHDPI = true;
 		config.addIcon("icon.png", Files.FileType.Internal);
-		new LwjglApplication(new RectballGame(), config);
+		new LwjglApplication(new RectballGame(new ActionResolverDesktop() {}), config);
 	}
 }

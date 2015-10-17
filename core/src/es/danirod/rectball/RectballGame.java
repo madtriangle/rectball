@@ -27,22 +27,37 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter;
 import com.badlogic.gdx.utils.I18NBundle;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+
 import es.danirod.rectball.model.GameState;
-import es.danirod.rectball.screens.*;
+import es.danirod.rectball.screens.AboutScreen;
+import es.danirod.rectball.screens.AbstractScreen;
+import es.danirod.rectball.screens.GameOverScreen;
+import es.danirod.rectball.screens.GameScreen;
+import es.danirod.rectball.screens.LoadingScreen;
+import es.danirod.rectball.screens.MainMenuScreen;
+import es.danirod.rectball.screens.Screens;
+import es.danirod.rectball.screens.SettingsScreen;
+import es.danirod.rectball.screens.StatisticsScreen;
+import es.danirod.rectball.screens.TutorialScreen;
 import es.danirod.rectball.settings.ScoreIO;
 import es.danirod.rectball.settings.Scores;
 import es.danirod.rectball.settings.Settings;
 import es.danirod.rectball.statistics.Statistics;
 import es.danirod.rectball.utils.RectballSkin;
 import es.danirod.rectball.utils.SoundPlayer;
-
-import java.util.*;
 
 /**
  * Main class for the game.
@@ -74,6 +89,10 @@ public class RectballGame extends Game {
     private I18NBundle locale;
 
     private Deque<AbstractScreen> screenStack = new ArrayDeque<>();
+
+    public ActionResolver actionResolver;
+
+    public RectballGame(ActionResolver actionResolver) {this.actionResolver = actionResolver;}
 
     @Override
     public void create() {
@@ -126,7 +145,8 @@ public class RectballGame extends Game {
 
         // Set up the loaders required to load TTF files using gdx-freetype.
         FileHandleResolver freetypeResolver = new InternalFileHandleResolver();
-        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(freetypeResolver));
+        manager.setLoader(FreeTypeFontGenerator.class,
+                          new FreeTypeFontGeneratorLoader(freetypeResolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(freetypeResolver));
 
         // Set up the parameters for loading linear textures. Linear textures
@@ -212,8 +232,8 @@ public class RectballGame extends Game {
      * The screen that has been previously on screen can be retrieved later using
      * popScreen.
      *
+     * @param id the screen that should be visible now.
      * @since 0.3.0
-     * @param id  the screen that should be visible now.
      */
     public void pushScreen(int id) {
         screenStack.push(screens.get(id));
@@ -249,6 +269,7 @@ public class RectballGame extends Game {
 
     /**
      * Add a screen to the map of Strings.
+     *
      * @param screen
      */
     public void addScreen(AbstractScreen screen) {
@@ -257,7 +278,8 @@ public class RectballGame extends Game {
 
     /**
      * Get the skin used by Scene2D UI to display things.
-     * @return  the skin the game should use.
+     *
+     * @return the skin the game should use.
      */
     public RectballSkin getSkin() {
         return uiSkin;
@@ -268,7 +290,8 @@ public class RectballGame extends Game {
     }
 
     public void updateBallAtlas() {
-        Texture balls = manager.get(settings.isColorblind() ? "board/colorblind.png" : "board/normal.png");
+        Texture balls = manager
+                .get(settings.isColorblind() ? "board/colorblind.png" : "board/normal.png");
         TextureRegion[][] regions = TextureRegion.split(balls, 256, 256);
         ballAtlas = new TextureAtlas();
         ballAtlas.addRegion("ball_red", regions[0][0]);
